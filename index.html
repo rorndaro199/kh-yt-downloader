@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KH-TOUTUBE-DOWNLOADER - Premium YouTube Downloader</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">▶</span>
+                    <h1>KH-TOUTUBE-DOWNLOADER</h1>
+                </div>
+                <p class="tagline">Premium Video & Audio Download Tool</p>
+                <button class="settings-btn" id="settingsBtn" title="Settings">⚙️</button>
+            </div>
+        </header>
+
+        <!-- Settings Modal -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button class="modal-close" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <label for="downloadLocation">Download Location</label>
+                        <input 
+                            type="text" 
+                            id="downloadLocation" 
+                            class="input-field"
+                            placeholder="e.g., D:\Movie or C:\Downloads"
+                        >
+                        <p class="input-hint">Enter the folder path where downloads will be saved</p>
+                    </div>
+                    <div class="current-location">
+                        <strong>Current Location:</strong>
+                        <p id="currentLocation">D:\Movie</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="resetLocationBtn">Reset to Default</button>
+                    <button class="btn btn-primary" id="saveLocationBtn">Save Location</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="input-group">
+                    <label for="videoUrl">YouTube URL</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="videoUrl" 
+                            placeholder="Paste YouTube link or video ID..." 
+                            class="input-field"
+                        >
+                        <button class="btn-paste" id="pasteBtn" title="Paste from clipboard">📋</button>
+                    </div>
+                    <p class="input-hint">Supports: https://youtube.com/watch?v=..., https://youtu.be/..., or video ID</p>
+                </div>
+
+                <!-- Download Mode Selection -->
+                <div class="mode-selector">
+                    <label>Download Mode</label>
+                    <div class="mode-buttons">
+                        <button class="mode-btn active" data-mode="video">
+                            <span class="mode-icon">🎬</span>
+                            <span>Video</span>
+                        </button>
+                        <button class="mode-btn" data-mode="audio">
+                            <span class="mode-icon">🎵</span>
+                            <span>Audio</span>
+                        </button>
+                        <button class="mode-btn" data-mode="both">
+                            <span class="mode-icon">⚙️</span>
+                            <span>Both</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quality Selection -->
+                <div class="quality-section">
+                    <label>Choose quality after fetching details</label>
+                    <div class="quality-grid" id="qualityGrid">
+                        <div class="quality-placeholder">
+                            Available quality options will appear here after fetching video details.
+                        </div>
+                    </div>
+                    <div class="quality-hint" id="qualityHint">Choose a mode and click Fetch Details to see available quality options.</div>
+                </div>
+                <div class="location-info">
+                    <span class="location-icon">📁</span>
+                    <span class="location-text">Location: <strong id="displayLocation">D:\Movie</strong></span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="button-group">
+                    <button class="btn btn-primary" id="fetchBtn">
+                        <span class="btn-icon">🔍</span>
+                        <span>Fetch Details</span>
+                    </button>
+                    <button class="btn btn-secondary" id="downloadBtn" disabled>
+                        <span class="btn-icon">⬇️</span>
+                        <span>Download Now</span>
+                    </button>
+                </div>
+
+                <!-- Status -->
+                <div class="status" id="status"></div>
+            </section>
+
+            <!-- Preview Section -->
+            <section class="preview-section" id="previewSection" style="display: none;">
+                <div class="preview-container">
+                    <!-- Thumbnail & Info -->
+                    <div class="preview-left">
+                        <div class="thumbnail-wrapper">
+                            <img id="thumbnail" src="" alt="Video thumbnail" class="thumbnail">
+                            <div class="duration-badge" id="durationBadge">--:--</div>
+                        </div>
+                        <div class="video-meta">
+                            <h2 id="videoTitle">Loading...</h2>
+                            <p id="videoChannel" class="channel-info">Channel</p>
+                            <div class="stats-grid">
+                                <div class="stat">
+                                    <span class="stat-label">Views</span>
+                                    <span class="stat-value" id="viewCount">-</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Duration</span>
+                                    <span class="stat-value" id="videoDuration">-</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Uploaded</span>
+                                    <span class="stat-value" id="uploadDate">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Player & Download Options -->
+                    <div class="preview-right">
+                        <div class="player-container">
+                            <iframe 
+                                id="player" 
+                                class="player"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="download-options">
+                            <button class="btn btn-outline" id="copyLinkBtn">
+                                <span class="icon">🔗</span> Copy Link
+                            </button>
+                            <button class="btn btn-outline" id="shareBtn">
+                                <span class="icon">📤</span> Share
+                            </button>
+                            <a class="btn btn-outline" id="youtubeBtn" target="_blank" rel="noopener">
+                                <span class="icon">▶</span> Open YouTube
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Download Progress Section -->
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <div class="progress-card">
+                    <h3>Downloading...</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">0%</p>
+                    <p class="progress-speed" id="progressSpeed">Speed: --</p>
+                    <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                </div>
+            </section>
+
+            <!-- Download History -->
+            <section class="history-section">
+                <h3>Recently Downloaded</h3>
+                <div class="history-list" id="historyList">
+                    <p class="empty-state">No downloads yet. Start by fetching a video!</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2024 KH-TOUTUBE-DOWNLOADER • Premium Download Experience</p>
+            <p class="disclaimer">⚠️ Respect copyright laws. Only download content you have permission to download.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
